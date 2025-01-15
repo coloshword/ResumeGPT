@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="./css/index.css">
+    </head>
+    <body>
+        <div class="previous-chats">
+            <p class="chat-text">Hello</p>
+            <p class="chat-text">Here is a second message </p>
+        </div>
+
+        <div class="submit-chats">
+            <input class="chat-input" type="text" placeholder="Send Message" />
+            <button class="send-chat-button"> Submit </button>
+        </div>
+        <script>
+            const sendChatBtn = document.querySelector('.send-chat-button');
+            const chatInput = document.querySelector('.chat-input');
+            const previousChats = document.querySelector('.previous-chats');
+
+            if (sendChatBtn && chatInput && previousChats) {
+                sendChatBtn.addEventListener('click', async () => {
+                    const chatInputValue = chatInput.value;
+                    console.log(chatInputValue);
+                    chatInput.value = '';
+
+                    const newChat = document.createElement('p');
+                    newChat.innerText = chatInputValue;
+                    newChat.classList.add('chat-text');
+                    previousChats.appendChild(newChat);
+                    try {
+                        const response = await fetch('http://localhost:8080/post-chat', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({text: chatInputValue})
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+
+                        const result = await response.text()
+                        console.log('Response:', result);
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                });
+            } else {
+                console.log("Error loading page");
+            }
+        </script>
+    </body>
+</html>
