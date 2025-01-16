@@ -10,3 +10,4 @@ Backend:
     - Spring
 
 ### Implementation milestones 
+- 01/14: First spring Get and Post request 
