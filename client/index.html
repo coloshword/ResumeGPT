@@ -44,6 +44,11 @@
 
                         const result = await response.text()
                         console.log('Response:', result);
+                        // add result to the previous chats 
+                        const geminiResponseText = document.createElement('p');
+                        geminiResponseText.classList.add('chat-text');
+                        geminiResponseText.innerText = result;
+                        previousChats.appendChild(geminiResponseText);
                     } catch (error) {
                         console.error('Error:', error);
                     }
