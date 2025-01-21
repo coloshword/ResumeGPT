@@ -11,3 +11,9 @@ Backend:
 
 ### Implementation milestones 
 - 01/14: First spring Get and Post request 
+
+- 01/16: First API call to Gemini Flash
+
+- 01/18: API call returns back to the frontend 
+
+-01/20: 

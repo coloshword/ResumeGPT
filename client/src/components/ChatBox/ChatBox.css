@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+.chat-box {
+    display: flex;
+    flex-direction: column;
+    height: 8vh;
+    background-color: #333336;
+    border-radius: 1rem;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+}
+
+.chat-box-input {
+    all: unset;
+    height: 4vh;
+    color: #fbfbfb;
+    font-size: 1.5rem;
+    font-family: "JetBrains Mono", serif;
+    text-align: left;
+}
+
+.chat-box-action-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+}
+
+.chat-box-send-chat-btn {
+    all: unset;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: #46688f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.chat-box-send-chat-btn:focus {
+    outline: none; 
+}
+
+.chat-box-send-chat-btn:focus-visible {
+    outline: none; 
+}
+
+.chat-box-send-chat-btn:hover {
+    border: 1px solid white;
+}
+
+.chat-box-send-chat-btn:active {
+    border: 2px solid #5b123e;
+}
+
+.send-chat-icon {
+    height:2rem;
+    width:2rem;
+    fill: white;
+}

@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import com.ResumeGPT.api.*;
 import com.ResumeGPT.models.*;
 
@@ -30,16 +32,16 @@ public class Application {
         return String.format("Hello World");
     }
     @PostMapping("/post-chat")
-    public String postChat(@RequestBody Message sentChat) {
+    public ResponseEntity postChat(@RequestBody Message sentChat) {
         String receivedChat = sentChat.getText();
         System.out.println(receivedChat);
-        this.makeGeminiRequest(receivedChat);
-        return "Success";
+        String geminiResponse = this.makeGeminiRequest(receivedChat);
+        // let's work this into an synchronous response 
+        return new ResponseEntity<String>(geminiResponse, HttpStatus.OK);
     }
 
     public String makeGeminiRequest(String requestText) {
-        this.geminiRequester.geminiPost(requestText);
-        return "Hello";
+        return this.geminiRequester.geminiPost(requestText);
     }
 }
 

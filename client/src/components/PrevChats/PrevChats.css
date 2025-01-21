@@ -1,0 +1,7 @@
+.prev-chats {
+    /*temp stylings */
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    height: 90vh;
+}

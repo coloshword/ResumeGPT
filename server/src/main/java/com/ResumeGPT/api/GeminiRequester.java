@@ -18,13 +18,13 @@ import java.io.OutputStream;
 
 @Component
 public class GeminiRequester {
-   
+    private String API_key = 
     private String geminiEndpoint = String.format("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=%s", this.API_key); 
 
     public GeminiRequester() {
     }
 
-    public void geminiPost(String content) {
+    public String geminiPost(String content) {
         HttpURLConnection con = null;
 
         try {
@@ -47,7 +47,6 @@ public class GeminiRequester {
             }
 
             int responseCode = con.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
 
             if (responseCode >= 200 && responseCode < 300) { // Success responses (2xx)
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
@@ -58,7 +57,18 @@ public class GeminiRequester {
                     }
 
                     JsonNode jsonResponse = objectMapper.readTree(response.toString());
-                    System.out.println("Response JSON: " + jsonResponse.toPrettyString());
+                    try {
+                        JsonNode candidates = jsonResponse.path("candidates");
+                        if (candidates.isArray() && candidates.size() > 0) {
+                            JsonNode content_json = candidates.get(0).path("content");
+                            JsonNode parts = content_json.path("parts").get(0);
+                            String text = parts.path("text").asText();
+                            return text;
+                        }
+                    }
+                    catch (Exception e) {
+                        System.err.println("Could not parse Gemini Response json");
+                    }
                 }
             } else {
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getErrorStream(), StandardCharsets.UTF_8))) {
@@ -84,6 +94,7 @@ public class GeminiRequester {
                 con.disconnect();
             }
         }
+        return "";
     }
 
 }
