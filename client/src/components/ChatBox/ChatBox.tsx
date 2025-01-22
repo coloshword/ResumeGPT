@@ -5,13 +5,52 @@ import sendChatIcon from "../../assets/send-chat.svg";
 type ChatBoxProps = {
     onSendChat: (message: string ) => void
 }
+
+type Message = {
+    text: String;
+}
+
 //ChatBox should t
 export default function ChatBox({onSendChat}: ChatBoxProps) {
+
+    async function postChat(message: Message) : Promise<any> {
+        const endpoint: string = 'http://localhost:8080/post-chat';
+
+        try {
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(message)
+            });
+
+            if (!response.ok) { 
+                throw new Error(`Failed to post chat: ${response.status}`)
+            }
+
+            return await response.text();
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
     function handleSendChat() {
         const chatInput = document.querySelector(".chat-box-input") as HTMLInputElement;
         if (chatInput && chatInput.value != '') {
-            onSendChat(chatInput.value);
+            const chatInputVal = chatInput.value
+            onSendChat(chatInputVal)
             chatInput.value = '';
+            // also send chat to fetch
+            const chatMsg: Message = {
+                text: chatInputVal
+            }
+            postChat(chatMsg).then((response: string) => {
+                // add the response to the previousChats
+                onSendChat(response)
+            }).catch((error: Error) => {
+                console.error(error)
+            })
         }
     }
 

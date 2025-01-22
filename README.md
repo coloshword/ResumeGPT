@@ -16,4 +16,5 @@ Backend:
 
 - 01/18: API call returns back to the frontend 
 
--01/20: 
+-01/21:
+    Client sends post-chat request to frontend, and adds it to the frontend
