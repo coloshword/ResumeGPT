@@ -6,8 +6,13 @@ type ChatBoxProps = {
     onSendChat: (message: string ) => void
 }
 
+enum MessageType {
+    LLM,
+    USER,
+}
 type Message = {
     text: String;
+    type: MessageType
 }
 
 //ChatBox should t
@@ -43,7 +48,8 @@ export default function ChatBox({onSendChat}: ChatBoxProps) {
             chatInput.value = '';
             // also send chat to fetch
             const chatMsg: Message = {
-                text: chatInputVal
+                text: chatInputVal,
+                type: MessageType.USER,
             }
             postChat(chatMsg).then((response: string) => {
                 // add the response to the previousChats

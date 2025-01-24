@@ -24,5 +24,5 @@ Thoughts:
 - for the post-chat endpoint, we are going to do a blocking synchronous call. This is because its easier to implement, and gemini isn't that slow. I guess we can always change this in the future. What that means is that we'll make gemini request, and then return the whole thing with payload, so we'll need the more complicated java class
 
 
-- switch the frontend to a React project 
-
+<cot>
+- so the error right now is ObjectMapper, cannot write value as a string, because it's unable to transcribe the object snetchat

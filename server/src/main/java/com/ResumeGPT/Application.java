@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ResumeGPT.api.*;
 import com.ResumeGPT.models.*;
 
@@ -31,13 +33,26 @@ public class Application {
     public String hello() {
         return String.format("Hello World");
     }
+
     @PostMapping("/post-chat")
-    public ResponseEntity postChat(@RequestBody Message sentChat) {
+    public ResponseEntity<Message> postChat(@RequestBody Message sentChat) {
         String receivedChat = sentChat.getText();
-        System.out.println(receivedChat);
-        String geminiResponse = this.makeGeminiRequest(receivedChat);
-        // let's work this into an synchronous response 
-        return new ResponseEntity<String>(geminiResponse, HttpStatus.OK);
+        try {
+            System.out.println("here1");
+            String chatAsString = new ObjectMapper().writeValueAsString(sentChat);
+            System.out.println("here2");
+            System.out.println(chatAsString);
+            String geminiResponse = this.makeGeminiRequest(receivedChat);
+            System.out.println("geminiResponse");
+            System.out.println(geminiResponse);
+            Message geminiMessage = new Message(geminiResponse, MessageType.LLM);
+            return new ResponseEntity<Message>(geminiMessage, HttpStatus.OK);
+        }
+        catch (JsonProcessingException e) {
+            System.out.println(e);
+        }
+        Message response = new Message("Failed to work", MessageType.LLM);
+        return new ResponseEntity<Message>(response, HttpStatus.NOT_IMPLEMENTED);
     }
 
     public String makeGeminiRequest(String requestText) {
