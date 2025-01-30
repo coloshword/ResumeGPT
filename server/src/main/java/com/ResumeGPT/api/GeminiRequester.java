@@ -18,7 +18,7 @@ import java.io.OutputStream;
 
 @Component
 public class GeminiRequester {
-    private String API_key = 
+    private String API_key =
     private String geminiEndpoint = String.format("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=%s", this.API_key); 
 
     public GeminiRequester() {

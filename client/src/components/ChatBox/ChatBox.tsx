@@ -3,14 +3,14 @@ import './ChatBox.css';
 import sendChatIcon from "../../assets/send-chat.svg";
 
 type ChatBoxProps = {
-    onSendChat: (message: string ) => void
+    onSendChat: (message: Message ) => void
 }
 
-enum MessageType {
+export enum MessageType {
     LLM,
     USER,
 }
-type Message = {
+export type Message = {
     text: String;
     type: MessageType
 }
@@ -44,16 +44,17 @@ export default function ChatBox({onSendChat}: ChatBoxProps) {
         const chatInput = document.querySelector(".chat-box-input") as HTMLInputElement;
         if (chatInput && chatInput.value != '') {
             const chatInputVal = chatInput.value
-            onSendChat(chatInputVal)
             chatInput.value = '';
             // also send chat to fetch
             const chatMsg: Message = {
                 text: chatInputVal,
                 type: MessageType.USER,
             }
+            onSendChat(chatMsg);
             postChat(chatMsg).then((response: string) => {
                 // add the response to the previousChats
-                onSendChat(response)
+                let responseMessage: Message = JSON.parse(response);
+                onSendChat(responseMessage);
             }).catch((error: Error) => {
                 console.error(error)
             })
@@ -64,6 +65,7 @@ export default function ChatBox({onSendChat}: ChatBoxProps) {
         if (e.key === 'Enter') {
             e.preventDefault();
             handleSendChat();
+
         }
     }
 

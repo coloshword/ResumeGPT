@@ -1,4 +1,16 @@
 .chat-interface {
-    height: 100%;
-    width: 80vw;
-}
+    position: relative;
+    width: 60vw;
+    height: 100vh; 
+    display: flex;
+    flex-direction: column; 
+    overflow: hidden; 
+  }
+  
+  /* Add a scrollable container for PrevChats */
+.prev-chats-scrollable {
+    flex: 1; 
+    overflow-y: auto; 
+    padding-bottom: 8vh;
+  }
+  

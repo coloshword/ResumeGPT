@@ -1,13 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
+/* Adjust ChatBox positioning */
+/* ChatBox.css */
 .chat-box {
+    /* Remove position: absolute and bottom: -0.5rem */
     display: flex;
     flex-direction: column;
     height: 8vh;
+    width: 100%;
     background-color: #333336;
     border-radius: 1rem;
-    padding: 0.5rem 1rem 0.5rem 1rem;
-}
+    padding: 0.5rem 1rem;
+    box-sizing: border-box;
+  }
 
 .chat-box-input {
     all: unset;
