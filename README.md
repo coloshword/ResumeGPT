@@ -31,6 +31,9 @@ Java Sends PDF as Response to Frontend
 - 01/23:
     - refactored endpoints with more sophisticated payload 
 
+01/30:
+    - started skeleton of python microservice for resume generation
+
 ### TODO:
 - make LLM backend "have context"
 
@@ -236,4 +239,3 @@ Ensures data consistency.
 
 Minimizes manual effort.
 
-Let me know if you’d like help designing the schemas or implementing the validation logic! 😊
