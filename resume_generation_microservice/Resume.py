@@ -1,8 +1,11 @@
 import json
 from weasyprint import HTML
-import utils 
-from bs4 import BeautifulSoup
+import utils
+import lxml.etree as ET
+from lxml.cssselect import CSSSelector
+import lxml.html as html
 import datetime
+import time 
 
 ### ResumeGenerator: generates a resume from json object
 class Resume:
@@ -13,7 +16,11 @@ class Resume:
             <html>
             <head>
                 <style>
-                    body { font-family: sans-serif; }
+                    @font-face {
+                        font-family: 'EB Garamond';
+                        src: url('fonts/EBGaramond-VariableFont_wght.ttf') format('truetype');
+                    }
+                    body { font-family: "EB Garamond", serif; }
                     h1 { color: red; }
                 </style>
             </head>
@@ -22,18 +29,37 @@ class Resume:
             </body>
             </html>
         '''
-        self.html = BeautifulSoup(html_str, 'html.parser')
-    
-    def insert_element_query(self, element, query):
+        self.html = ET.fromstring(html_str, parser=ET.HTMLParser())
+
+    def pretty_print(self, element, **kwargs):
+        xml = ET.tostring(element, pretty_print=True, **kwargs)
+        print(xml.decode(), end='')
+
+    def insert_font_style(self):
+        pass
+        # based on the font-style, insert the right type of font to it
+        
+    def insert_element_query(self, element, query, append=True):
         '''
         inserts a new element, as a string, as a child of the first element that matches the query. 
             Params:
                 html
                 element: string; the element as a string 
                 query: string; the query as a string (equivalent to query selector in js land)
+            Returns:
+                success? --> True is successful, False if not 
         '''
-        element = self.html.select(query).append(BeautifulSoup(element, 'html.parser'))
-        print(str(element))
+        # first start by finding the element based on query
+        queried_element = CSSSelector(query)(self.html)
+        if len(queried_element) > 0:
+            element = html.fragment_fromstring(element)
+            if append:
+                queried_element[0].append(element)
+            else:
+                queried_element[0].insert(0, element)
+            return True
+        return False
+
 
     def generate_pdf_html(self, json_resume):
         '''
@@ -42,8 +68,8 @@ class Resume:
         with open(utils.get_relative_path('font_to_link_mapping.json')) as f:
             fonts_mapping = json.load(f)
         if json_resume['font-name'] in fonts_mapping:
-            print(fonts_mapping[json_resume['font-name']])
-            self.insert_element_query(fonts_mapping[json_resume['font-name']], 'head')
+            #self.insert_element_query(fonts_mapping[json_resume['font-name']], 'head')
+            self.pretty_print(self.html)
 
     def to_pdf(self, json_resume):
         ''''
@@ -57,7 +83,9 @@ class Resume:
         self.generate_pdf_html(json_resume)
         now = datetime.datetime.now()
         timestamp = now.strftime('%Y%m%d%H%M%S')
-        HTML(string=str(self.html)).write_pdf(f'resume{timestamp}.pdf')
+        start = time.time()
+        HTML(string=ET.tostring(self.html)).write_pdf(f'resume{timestamp}.pdf')
+        print(time.time() - start)
         # so it looks like the key function is write_pdf, and we can write it however we like using html. Let's just try to see this in action right now 
 
 def main():
