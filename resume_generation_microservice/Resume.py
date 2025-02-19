@@ -7,37 +7,27 @@ import lxml.html as html
 import datetime
 import time 
 
-### ResumeGenerator: generates a resume from json object
 class Resume:
-    def __init__(self):
+    def __init__(self, resume_dict):
         ## the starter html 
-        html_str = '''
+        html_str = """
             <!DOCTYPE html>
             <html>
             <head>
                 <style>
-                    @font-face {
-                        font-family: 'EB Garamond';
-                        src: url('fonts/EBGaramond-VariableFont_wght.ttf') format('truetype');
-                    }
-                    body { font-family: "EB Garamond", serif; }
-                    h1 { color: red; }
+                    body {{ font-family: "{}", serif; }}
                 </style>
             </head>
             <body>
-                <h1>Hello, PDF!</h1>
             </body>
             </html>
-        '''
+        """.format(resume_dict["font-name"])
         self.html = ET.fromstring(html_str, parser=ET.HTMLParser())
+        self.resume_dict = resume_dict
 
     def pretty_print(self, element, **kwargs):
         xml = ET.tostring(element, pretty_print=True, **kwargs)
         print(xml.decode(), end='')
-
-    def insert_font_style(self):
-        pass
-        # based on the font-style, insert the right type of font to it
         
     def insert_element_query(self, element, query, append=True):
         '''
@@ -52,7 +42,7 @@ class Resume:
         # first start by finding the element based on query
         queried_element = CSSSelector(query)(self.html)
         if len(queried_element) > 0:
-            element = html.fragment_fromstring(element)
+            element = html.fragment_fromstring("\n" + element)
             if append:
                 queried_element[0].append(element)
             else:
@@ -60,18 +50,28 @@ class Resume:
             return True
         return False
 
-
-    def generate_pdf_html(self, json_resume):
-        '''
-        heavy lifter function to turn json_resume to equivalent html 
-        ''' 
+    def insert_font(self):
         with open(utils.get_relative_path('font_to_link_mapping.json')) as f:
             fonts_mapping = json.load(f)
-        if json_resume['font-name'] in fonts_mapping:
-            #self.insert_element_query(fonts_mapping[json_resume['font-name']], 'head')
-            self.pretty_print(self.html)
+            # change the body element
+            if self.resume_dict['font-name'] in fonts_mapping:
+                self.insert_element_query(fonts_mapping[self.resume_dict['font-name']], 'head')
 
-    def to_pdf(self, json_resume):
+    def generate_pdf_html(self):
+        '''
+        heavy lifter function to turn json_resume to equivalent html 
+        '''
+        self.insert_font()
+        # for each print through
+        for k, v in self.resume_dict.items():
+            if isinstance(v, dict) and 'text' in v:
+                text = v['text']
+                if text:
+                    html_element = f"<span>{text}</span>"
+                    self.insert_element_query(html_element, 'body')
+        #self.pretty_print(self.html)
+
+    def to_pdf(self):
         ''''
         generate_pdf: takes a JSON object, defining a resume, and creates a pdf of that version. Not responsible for validating the resume schema 
         Params:
@@ -80,24 +80,22 @@ class Resume:
             (str) path to the generated resume 
         '''
         # at this point, we have the data. What's the key? Create a blank canvas with weasy print
-        self.generate_pdf_html(json_resume)
+        self.generate_pdf_html()
         now = datetime.datetime.now()
         timestamp = now.strftime('%Y%m%d%H%M%S')
         start = time.time()
-        HTML(string=ET.tostring(self.html)).write_pdf(f'resume{timestamp}.pdf')
+        HTML(string=ET.tostring(self.html)).write_pdf(f'../output_resumes/resume{timestamp}.pdf')
         print(time.time() - start)
-        # so it looks like the key function is write_pdf, and we can write it however we like using html. Let's just try to see this in action right now 
 
 def main():
     ## just a test function for development purposes 
     # sample path
     resume_template_path = '../resume_templates/simple_1_filled.json'
     with open(resume_template_path, "r") as f:
-        data = json.load(f)
-
+        resume_dict = json.load(f)
     # create a ResumeGenerator object, where we are going to pass in the json data to generate pdf
-    resume = Resume()
-    resume.to_pdf(data)
+    resume = Resume(resume_dict)
+    resume.to_pdf()
         
 if __name__ == "__main__":
     main()
